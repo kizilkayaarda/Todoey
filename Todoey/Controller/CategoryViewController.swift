@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
 
     let realm = try! Realm()
     
@@ -18,13 +18,8 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        
         loadData()
+
     }
     
     //MARK - DataSource methods
@@ -33,8 +28,8 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "categoryCell", for : indexPath)
+    
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories"
         
@@ -76,6 +71,19 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    override func updateModel(at indexPath: IndexPath) {
+        if let itemToBeDeleted = self.categories?[indexPath.row] {
+        
+            do {
+                try self.realm.write {
+                    self.realm.delete(itemToBeDeleted)
+                }
+            } catch {
+                print("Deleting cell error , \(error)")
+            }
+        }
+    }
+    
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -104,3 +112,4 @@ class CategoryViewController: UITableViewController {
     }
     
 }
+
